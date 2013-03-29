@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:quartz="http://www.mulesoft.org/schema/mule/quartz" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:https="http://www.mulesoft.org/schema/mule/https"
+	xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd 
+http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/1.0/mule-objectstore.xsd 
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd 
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd 
+http://www.mulesoft.org/schema/mule/quartz http://www.mulesoft.org/schema/mule/quartz/current/mule-quartz.xsd 
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd ">
+	<objectstore:config name="ObjectStore" doc:name="ObjectStore" partition="cookies" />
+	<https:connector name="httpsConnector" enableCookies="true"
+		cookieSpec="rfc2109" validateConnections="true" sendBufferSize="0"
+		receiveBufferSize="0" receiveBacklog="0" clientSoTimeout="60000"
+		serverSoTimeout="60000" socketSoLinger="0" doc:name="HTTP\HTTPS">
+	</https:connector>
+	<flow name="https-cookies-certificatesFlow1" doc:name="https-cookies-certificatesFlow1">
+		<http:inbound-endpoint exchange-pattern="request-response"
+			host="localhost" port="8081" doc:name="/service/proxy"
+			path="service/proxy" />
+		<set-variable variableName="resource"
+			value="#[message.inboundProperties['http.relative.path']]" doc:name="Set resource" />
+		<objectstore:contains config-ref="ObjectStore"
+			key="session.id" doc:name="Contains session.id ?" />
+		<choice doc:name="Choice">
+			<when expression="#[payload == true]">
+				<flow-ref name="set-cookie-header" doc:name="Set Cookie Header" />
+			</when>
+			<otherwise>
+				<logger message="Making unauthenticated request" level="INFO"
+					doc:name="Unauthenticated" />
+			</otherwise>
+		</choice>
+		<https:outbound-endpoint exchange-pattern="request-response"
+			method="GET" connector-ref="httpsConnector" doc:name="GET: /[resource]"
+			host="${service.url}" path="#[resource]" port="443" responseTimeout="60000"/>
+        <choice doc:name="Choice">
+            <when expression="message.inboundProperties['http.status'] == 302">
+                <flow-ref name="authenticate-and-get-resource" doc:name="Authenticate and get resource"/>
+            </when>
+            <otherwise>
+                <logger message="200 OK" level="INFO" doc:name="200 OK"/>
+            </otherwise>
+        </choice>
+	</flow>
+    <sub-flow name="authenticate-and-get-resource" doc:name="authenticate-and-get-resource">
+        <https:outbound-endpoint exchange-pattern="request-response" method="GET" address="https://#[message.inboundProperties.Location.substring(8)]" connector-ref="httpsConnector" doc:name="GET: /[Location]"/>
+        <objectstore:store config-ref="ObjectStore" key="session.id" value-ref="#[message.inboundProperties['Set-Cookie'][0]]" doc:name="Store session.id"/>
+        <flow-ref name="set-cookie-header" doc:name="Set cookie header"/>
+        <flow-ref name="authenticate" doc:name="Authenticate"/>
+        <flow-ref name="set-cookie-header" doc:name="Set cookie header"/>
+        <https:outbound-endpoint exchange-pattern="request-response" method="GET"  connector-ref="httpsConnector" doc:name="GET: /[resource]" responseTimeout="60000" path="#[flowVars.resource]" host="${service.url}" port="443"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <http:response-builder status="200" contentType="#[flowVars.resource.endsWith('xml') ? 'application/xml' : 'application/json']" doc:name="200 text/[xml | json]"/>
+    </sub-flow>
+	<sub-flow name="set-cookie-header" doc:name="set-cookie-header">
+		<objectstore:retrieve config-ref="ObjectStore"
+			key="session.id" doc:name="Retrieve session.id" />
+		<set-property propertyName="Cookie" value="#[payload]"
+			doc:name="Set Cookie" />
+	</sub-flow>
+	<sub-flow name="authenticate" doc:name="authenticate">
+		<expression-transformer expression="['user_name' : '${username}' , 'password' : '${password}']" doc:name="username and password"/>
+		<https:outbound-endpoint exchange-pattern="request-response" method="POST"
+			 responseTimeout="30000" doc:name="POST: /login_page?redirect=[resource]" 
+			contentType="application/x-www-form-urlencoded" host="${service.url}"
+			path="login_page?redirect=%2F#[flowVars.resource]" port="443" connector-ref="httpsConnector">
+		</https:outbound-endpoint>
+
+	</sub-flow>
+
+</mule>

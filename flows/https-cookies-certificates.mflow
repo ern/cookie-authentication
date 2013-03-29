@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="https-cookies-certificates">
+    <global-element type="http://www.mulesoft.org/schema/mule/objectstore/config" name="ObjectStore" entity-id="ObjectStore#1">
+        <properties>
+            <property value="cookies" name="partition"/>
+            <property name="persistent"/>
+            <property value="ObjectStore" name="name"/>
+            <property name="objectStore-ref"/>
+            <property value="1" name="auxiliary;index"/>
+        </properties>
+    </global-element>
+    <global-element type="org.mule.tooling.ui.modules.core.global.httpsConnector" name="HTTP\HTTPS" entity-id="HTTP\HTTPS#1">
+        <properties>
+            <property name="proxyUsername"/>
+            <property name="reuseAddress"/>
+            <property value="0" name="receiveBacklog"/>
+            <property value="true" name="enableCookies"/>
+            <property value="60000" name="serverSoTimeout"/>
+            <property value="0" name="socketSoLinger"/>
+            <property value="http://www.mulesoft.org/schema/mule/https/connector" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+            <property value="60000" name="clientSoTimeout"/>
+            <property value="true" name="validateConnections"/>
+            <property name="keepAlive"/>
+            <property name="sendTcpNoDelay"/>
+            <property name="label"/>
+            <property name="proxyPort"/>
+            <property value="rfc2109" name="cookieSpec"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="proxyHostname"/>
+            <property value="0" name="receiveBufferSize"/>
+            <property value="httpsConnector" name="name"/>
+            <property name="keepSendSocketOpen"/>
+            <property name="dynamicNotification"/>
+            <property value="0" name="sendBufferSize"/>
+            <property name="ENABLE_MODE_SWITCH"/>
+            <property name="proxyPassword"/>
+            <property value="2" name="auxiliary;index"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="https-cookies-certificatesFlow1" entity-id="0efc4f02-5bf0-4548-90a8-3f297ab15e7a">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="3" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#1">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="/service/proxy" entity-id="HTTP#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="8081" name="port"/>
+                    <property value="true" name="auxiliary;erased;mimeType"/>
+                    <property value="" name="contentType"/>
+                    <property value="" name="password"/>
+                    <property value="false" name="tracking:enable-default-events"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="updated"/>
+                    <property value="true" name="auxiliary;erased;encoding"/>
+                    <property value="service/proxy" name="path"/>
+                    <property value="" name="encoding"/>
+                    <property value="" name="responseTransformer-refs"/>
+                    <property value="" name="mimeType"/>
+                    <property value="10000" name="responseTimeout"/>
+                    <property value="4" name="auxiliary;index"/>
+                    <property value="true" name="auxiliary;erased;contentType"/>
+                    <property value="localhost" name="host"/>
+                    <property value="" name="businessEventsLabel"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="false" name="keep-alive"/>
+                    <property value="false" name="disableTransportTransformer"/>
+                    <property value="" name="ref"/>
+                    <property value="" name="transformer-refs"/>
+                    <property value="" name="httpLabel"/>
+                    <property value="" name="address"/>
+                    <property value="" name="user"/>
+                    <property value="" name="connector-ref"/>
+                </properties>
+                <description></description>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Set resource" entity-id="Variable#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="resource" name="variableName"/>
+                    <property value="#[message.inboundProperties['http.relative.path']]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="5" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/objectstore/objectstore-connector" name="Contains session.id ?" entity-id="ObjectStore#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="updated"/>
+                    <property value="http://www.mulesoft.org/schema/mule/objectstore/contains" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="ObjectStore" name="config-ref"/>
+                    <property value="6" name="auxiliary;index"/>
+                    <property value="session.id" name="key"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <splitter index="7" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="7" name=";INDEX"/>
+                    <property-collection name="5fe10927-e448-405a-88b0-a566f48b8c23">
+                        <property value="#[payload == true]" name="choice.expression"/>
+                        <property-collection name="choice.attributes">
+                            <property value="#[payload == true]" name="expression"/>
+                        </property-collection>
+                    </property-collection>
+                    <property-collection name="8a1eaf1a-ab76-4dcc-90d2-e2f18545f3a7">
+                        <property value="true" name="choice.otherwise"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
+                </properties>
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#2">
+                    <properties>
+                        <property value="7" name=";INDEX"/>
+                        <property-collection name="5fe10927-e448-405a-88b0-a566f48b8c23">
+                            <property value="#[payload == true]" name="choice.expression"/>
+                            <property-collection name="choice.attributes">
+<property value="#[payload == true]" name="expression"/>
+                            </property-collection>
+                        </property-collection>
+                        <property-collection name="8a1eaf1a-ab76-4dcc-90d2-e2f18545f3a7">
+                            <property value="true" name="choice.otherwise"/>
+                            <property-collection name="choice.attributes"/>
+                        </property-collection>
+                    </properties>
+                </pattern>
+                <compartment entity-id="compartment#1">
+                    <lane isChoiceOtherwiseLane="false" index="9" hadOnlyOneElement="false" entity-id="5fe10927-e448-405a-88b0-a566f48b8c23">
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Set Cookie Header" entity-id="Flow Reference#1">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property value="set-cookie-header" name="name"/>
+<property value="9" name="auxiliary;index"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                    <lane isChoiceOtherwiseLane="true" index="11" hadOnlyOneElement="false" entity-id="8a1eaf1a-ab76-4dcc-90d2-e2f18545f3a7">
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Unauthenticated" entity-id="Logger#1">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property value="Making unauthenticated request" name="message"/>
+<property value="" name="category"/>
+<property value="INFO" name="level"/>
+<property name="updated"/>
+<property value="11" name="auxiliary;index"/>
+                            </properties>
+                            <description></description>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </splitter>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Outbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="GET: /[resource]" entity-id="HTTP#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="true" name="auxiliary;erased;mimeType"/>
+                    <property value="443" name="port"/>
+                    <property value="" name="contentType"/>
+                    <property value="" name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="false" name="tracking:enable-default-events"/>
+                    <property name="updated"/>
+                    <property value="true" name="auxiliary;erased;encoding"/>
+                    <property value="#[resource]" name="path"/>
+                    <property value="" name="encoding"/>
+                    <property value="" name="responseTransformer-refs"/>
+                    <property value="12" name="auxiliary;index"/>
+                    <property value="httpsConnector" name="connector-ref-outbound"/>
+                    <property value="" name="mimeType"/>
+                    <property value="60000" name="responseTimeout"/>
+                    <property value="true" name="auxiliary;erased;contentType"/>
+                    <property value="${service.url}" name="host"/>
+                    <property value="" name="businessEventsLabel"/>
+                    <property value="false" name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/https/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="false" name="keep-alive"/>
+                    <property value="false" name="disableTransportTransformer"/>
+                    <property value="" name="ref"/>
+                    <property value="" name="httpLabel"/>
+                    <property value="" name="transformer-refs"/>
+                    <property value="" name="address"/>
+                    <property value="GET" name="method"/>
+                    <property value="" name="user"/>
+                </properties>
+                <description></description>
+            </endpoint>
+            <splitter index="13" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="13" name=";INDEX"/>
+                    <property-collection name="9047bec3-f2dd-4bd9-9127-8c5527c131e9">
+                        <property value="true" name="choice.otherwise"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
+                    <property-collection name="c4695bd8-d6a3-4b33-8739-4189ad2ae778">
+                        <property value="message.inboundProperties['http.status'] == 302" name="choice.expression"/>
+                        <property-collection name="choice.attributes">
+                            <property value="message.inboundProperties['http.status'] == 302" name="expression"/>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#4">
+                    <properties>
+                        <property value="13" name=";INDEX"/>
+                        <property-collection name="9047bec3-f2dd-4bd9-9127-8c5527c131e9">
+                            <property value="true" name="choice.otherwise"/>
+                            <property-collection name="choice.attributes"/>
+                        </property-collection>
+                        <property-collection name="c4695bd8-d6a3-4b33-8739-4189ad2ae778">
+                            <property value="message.inboundProperties['http.status'] == 302" name="choice.expression"/>
+                            <property-collection name="choice.attributes">
+<property value="message.inboundProperties['http.status'] == 302" name="expression"/>
+                            </property-collection>
+                        </property-collection>
+                    </properties>
+                </pattern>
+                <compartment entity-id="compartment#2">
+                    <lane isChoiceOtherwiseLane="false" index="15" hadOnlyOneElement="false" entity-id="c4695bd8-d6a3-4b33-8739-4189ad2ae778">
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Authenticate and get resource" entity-id="Flow Reference#2">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property value="authenticate-and-get-resource" name="name"/>
+<property value="15" name="auxiliary;index"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                    <lane isChoiceOtherwiseLane="true" index="17" hadOnlyOneElement="false" entity-id="9047bec3-f2dd-4bd9-9127-8c5527c131e9">
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="200 OK" entity-id="Logger#2">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property value="200 OK" name="message"/>
+<property name="category"/>
+<property value="INFO" name="level"/>
+<property value="17" name="auxiliary;index"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </splitter>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="authenticate-and-get-resource" entity-id="c5e8b08a-a4f2-4820-a245-6ba7ea84176b">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="18" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#2">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Outbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="GET: /[Location]" entity-id="HTTP#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="port"/>
+                    <property name="contentType"/>
+                    <property name="password"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="encoding"/>
+                    <property name="path"/>
+                    <property name="responseTransformer-refs"/>
+                    <property value="19" name="auxiliary;index"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property value="httpsConnector" name="connector-ref-outbound"/>
+                    <property name="host"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/https/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="keep-alive"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="ref"/>
+                    <property name="httpLabel"/>
+                    <property name="transformer-refs"/>
+                    <property value="https://#[message.inboundProperties.Location.substring(8)]" name="address"/>
+                    <property value="GET" name="method"/>
+                    <property name="user"/>
+                    <property value="httpsConnector" name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/objectstore/objectstore-connector" name="Store session.id" entity-id="ObjectStore#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="updated"/>
+                    <property value="false" name="overwrite"/>
+                    <property value="http://www.mulesoft.org/schema/mule/objectstore/store" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="ObjectStore" name="config-ref"/>
+                    <property value="20" name="auxiliary;index"/>
+                    <property value="session.id" name="key"/>
+                    <property value="#[message.inboundProperties['Set-Cookie'][0]]" name="value-ref"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Set cookie header" entity-id="Flow Reference#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="set-cookie-header" name="name"/>
+                    <property value="21" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Authenticate" entity-id="Flow Reference#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="authenticate" name="name"/>
+                    <property value="22" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Set cookie header" entity-id="Flow Reference#5">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="set-cookie-header" name="name"/>
+                    <property value="23" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Outbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="GET: /[resource]" entity-id="HTTP#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="true" name="auxiliary;erased;mimeType"/>
+                    <property value="443" name="port"/>
+                    <property value="" name="contentType"/>
+                    <property value="" name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="false" name="tracking:enable-default-events"/>
+                    <property name="updated"/>
+                    <property value="true" name="auxiliary;erased;encoding"/>
+                    <property value="#[flowVars.resource]" name="path"/>
+                    <property value="" name="encoding"/>
+                    <property value="" name="responseTransformer-refs"/>
+                    <property value="24" name="auxiliary;index"/>
+                    <property value="httpsConnector" name="connector-ref-outbound"/>
+                    <property value="" name="mimeType"/>
+                    <property value="60000" name="responseTimeout"/>
+                    <property value="true" name="auxiliary;erased;contentType"/>
+                    <property value="${service.url}" name="host"/>
+                    <property value="" name="businessEventsLabel"/>
+                    <property value="false" name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/https/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="false" name="keep-alive"/>
+                    <property value="false" name="disableTransportTransformer"/>
+                    <property value="" name="ref"/>
+                    <property value="" name="httpLabel"/>
+                    <property value="" name="transformer-refs"/>
+                    <property value="" name="address"/>
+                    <property value="GET" name="method"/>
+                    <property value="" name="user"/>
+                </properties>
+                <description></description>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object to String" entity-id="Object to String#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property value="25" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/http/response-builder" name="200 text/[xml | json]" entity-id="HTTP Response Builder#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="cookiesLabel"/>
+                    <property value="200" name="status"/>
+                    <property value="#[flowVars.resource.endsWith('xml') ? 'application/xml' : 'application/json']" name="contentType"/>
+                    <property value="26" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="set-cookie-header" entity-id="39eca49d-51fb-4c13-84f3-47bca9874b6d">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="27" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#3">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <pattern type="http://www.mulesoft.org/schema/mule/objectstore/objectstore-connector" name="Retrieve session.id" entity-id="ObjectStore#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="updated"/>
+                    <property value="http://www.mulesoft.org/schema/mule/objectstore/retrieve" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="" name="defaultValue-ref"/>
+                    <property value="ObjectStore" name="config-ref"/>
+                    <property value="28" name="auxiliary;index"/>
+                    <property value="session.id" name="key"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/properties-transformer" name="Set Cookie" entity-id="Property#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Cookie" name="propertyName"/>
+                    <property value="#[payload]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-property" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="29" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="authenticate" entity-id="05dc8365-ce66-4cab-8fe3-f0f46698de74">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="30" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#4">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/expression-transformer" name="username and password" entity-id="Expression#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="['user_name' : '${username}' , 'password' : '${password}']" name="expression"/>
+                    <property value="true" name="auxiliary;erased;mimeType"/>
+                    <property value="" name="returnClass"/>
+                    <property value="false" name="ignoreBadInput"/>
+                    <property value="false" name="returnSourceIfNull"/>
+                    <property name="updated"/>
+                    <property value="true" name="auxiliary;erased;encoding"/>
+                    <property value="" name="encoding"/>
+                    <property value="31" name="auxiliary;index"/>
+                    <property value="" name="mimeType"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Outbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="POST: /login_page?redirect=[resource]" entity-id="HTTP#5">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="true" name="auxiliary;erased;mimeType"/>
+                    <property value="443" name="port"/>
+                    <property value="application/x-www-form-urlencoded" name="contentType"/>
+                    <property value="" name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="false" name="tracking:enable-default-events"/>
+                    <property name="updated"/>
+                    <property value="true" name="auxiliary;erased;encoding"/>
+                    <property value="login_page?redirect=%2F#[flowVars.resource]" name="path"/>
+                    <property value="" name="encoding"/>
+                    <property value="" name="responseTransformer-refs"/>
+                    <property value="32" name="auxiliary;index"/>
+                    <property value="httpsConnector" name="connector-ref-outbound"/>
+                    <property value="" name="mimeType"/>
+                    <property value="30000" name="responseTimeout"/>
+                    <property value="${service.url}" name="host"/>
+                    <property value="" name="businessEventsLabel"/>
+                    <property value="false" name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/https/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="false" name="keep-alive"/>
+                    <property value="false" name="disableTransportTransformer"/>
+                    <property value="" name="ref"/>
+                    <property value="" name="httpLabel"/>
+                    <property value="" name="transformer-refs"/>
+                    <property value="" name="address"/>
+                    <property value="POST" name="method"/>
+                    <property value="" name="user"/>
+                </properties>
+                <description></description>
+            </endpoint>
+        </lane>
+    </flow>
+</mule-configuration>
