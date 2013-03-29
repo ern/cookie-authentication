@@ -19,6 +19,17 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 http://www.mulesoft.org/schema/mule/quartz http://www.mulesoft.org/schema/mule/quartz/current/mule-quartz.xsd 
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd ">
+
+
+	<spring:beans>
+		<spring:bean id="property-placeholder"
+			class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+			<spring:property name="location"
+				value="classpath:config.properties" />
+		</spring:bean>
+	</spring:beans>
+
+
 	<objectstore:config name="ObjectStore" doc:name="ObjectStore" partition="cookies" />
 	<https:connector name="httpsConnector" enableCookies="true"
 		cookieSpec="rfc2109" validateConnections="true" sendBufferSize="0"
